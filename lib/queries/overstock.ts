@@ -528,8 +528,10 @@ export async function getOverstockItems(): Promise<OverstockItem[]> {
  * Trickle floor (demand ≥ 12 / MoC ≤ 60) is applied by scoreOverstockCandidates.
  */
 export async function getOverstockScoringCandidates(
-  _companyId: string
+  companyId: string
 ): Promise<ScoringCandidate[]> {
+  // Single-tenant inventory reads; companyId reserved for multi-tenant later.
+  void companyId;
   return loadEligibleOverstockCandidates();
 }
 

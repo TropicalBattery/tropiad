@@ -11,11 +11,7 @@ import { getSingleCompanyId } from "@/lib/config/single-company";
 export const maxDuration = 60;
 export const dynamic = "force-dynamic";
 
-type RouteContext = {
-  params: { slug: string };
-};
-
-export async function POST(_request: Request, _context: RouteContext) {
+export async function POST() {
   const sessionUser = await getSessionUser();
 
   if (!sessionUser || !canAccessOperatorTools(sessionUser.role)) {
