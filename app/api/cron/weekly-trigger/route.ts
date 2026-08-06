@@ -1,9 +1,13 @@
-// Vercel Cron schedules run in UTC. The weekly-trigger schedule (0 22 * * 0)
-// may need timezone-offset adjustment based on testing.
+// Weekly trigger is scheduled externally (Supabase Cron / pg_cron). Schedules
+// run in UTC — adjust offset based on testing.
 
 import { apiError, apiSuccess } from "@/lib/api/response";
 import { createWeeklyRun } from "@/lib/agents/run-processor";
 import { getSingleCompanyId } from "@/lib/config/single-company";
+
+/** Hobby ceiling is 60s; raise to 300 on Pro if needed. */
+export const maxDuration = 60;
+export const dynamic = "force-dynamic";
 
 function verifyCronAuth(request: Request): boolean {
   const authHeader = request.headers.get("authorization");

@@ -2,6 +2,10 @@ import { apiError, apiSuccess } from "@/lib/api/response";
 import { pollVideoCompletion } from "@/lib/agents/visual";
 import { createAdminClient } from "@/lib/supabase/admin";
 
+/** Hobby ceiling is 60s; raise to 300 on Pro if video polling batches time out. */
+export const maxDuration = 60;
+export const dynamic = "force-dynamic";
+
 function verifyCronAuth(request: Request): boolean {
   const authHeader = request.headers.get("authorization");
   const expected = `Bearer ${process.env.CRON_SECRET ?? ""}`;

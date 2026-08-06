@@ -7,6 +7,10 @@ import {
   OverstockApproveError,
 } from "@/lib/queries/overstock-analysis";
 
+/** Hobby ceiling is 60s; raise to 300 on Pro if approve+generation path times out. */
+export const maxDuration = 60;
+export const dynamic = "force-dynamic";
+
 type RouteContext = {
   params: { id: string };
 };

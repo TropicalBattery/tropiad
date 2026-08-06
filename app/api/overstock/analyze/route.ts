@@ -4,6 +4,10 @@ import { apiError, apiSuccess } from "@/lib/api/response";
 import { getSingleCompanyId } from "@/lib/config/single-company";
 import { runOverstockAnalysis } from "@/lib/queries/overstock-analysis";
 
+/** Hobby ceiling is 60s; raise to 300 on Pro if score + AI review batch times out. */
+export const maxDuration = 60;
+export const dynamic = "force-dynamic";
+
 export async function POST() {
   const sessionUser = await getSessionUser();
 

@@ -7,6 +7,10 @@ import {
 } from "@/lib/agents/run-processor";
 import { getSingleCompanyId } from "@/lib/config/single-company";
 
+/** Hobby ceiling is 60s; raise to 300 on Pro if create+advance (Claude) times out. */
+export const maxDuration = 60;
+export const dynamic = "force-dynamic";
+
 type RouteContext = {
   params: { slug: string };
 };

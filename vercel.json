@@ -1,16 +1,1 @@
-{
-  "crons": [
-    {
-      "path": "/api/cron/weekly-trigger",
-      "schedule": "0 22 * * 0"
-    },
-    {
-      "path": "/api/cron/advance-runs",
-      "schedule": "*/5 * * * *"
-    },
-    {
-      "path": "/api/cron/video-poll",
-      "schedule": "*/15 * * * *"
-    }
-  ]
-}
+{}
