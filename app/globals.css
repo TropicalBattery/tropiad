@@ -1,0 +1,219 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    /* Tropical Battery design tokens (chrome) */
+    --page-bg: #f3f4f6;
+    --card-bg: #ffffff;
+    --border-color: #e5e7eb;
+    --text-primary: #111111;
+    --text-secondary: #6b7280;
+    --accent: #cc2b2b;
+
+    --bg-base: #f3f4f6;
+    --bg-surface: #ffffff;
+    --bg-surface-hover: #f3f4f6;
+    --accent-violet: #cc2b2b;
+    --accent-teal: #cc2b2b;
+    --accent-pink: #dc2626;
+    --accent-amber: #f5a000;
+    --text-muted: #6b7280;
+    --border-subtle: #e5e7eb;
+    --border-glow: rgba(204, 43, 43, 0.28);
+
+    --tbc-red: #cc2b2b;
+    --tbc-red-hover: #b02424;
+    --tbc-amber: #f5a000;
+    --tbc-sidebar: #111111;
+
+    --background: 220 14% 96%;
+    --foreground: 0 0% 7%;
+    --card: 0 0% 100%;
+    --card-foreground: 0 0% 7%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 0 0% 7%;
+    --primary: 0 65% 48%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 220 14% 96%;
+    --secondary-foreground: 0 0% 7%;
+    --muted: 220 14% 96%;
+    --muted-foreground: 220 9% 46%;
+    --accent: 0 65% 48%;
+    --accent-foreground: 0 0% 100%;
+    --destructive: 0 72% 51%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 220 13% 91%;
+    --input: 220 13% 91%;
+    --ring: 0 65% 48%;
+    --radius: 1rem;
+    --toggle-off: #d1d5db;
+  }
+
+  .dark {
+    --page-bg: #0a0a0a;
+    --card-bg: #161616;
+    --border-color: #2a2a2a;
+    --text-primary: #f5f5f5;
+    --text-secondary: #a3a3a3;
+    --accent: #e04848;
+
+    --bg-base: #0a0a0a;
+    --bg-surface: #161616;
+    --bg-surface-hover: #1f1f1f;
+    --accent-violet: #e04848;
+    --accent-teal: #e04848;
+    --accent-pink: #f87171;
+    --accent-amber: #f5a000;
+    --text-muted: #a3a3a3;
+    --border-subtle: rgba(255, 255, 255, 0.1);
+    --border-glow: rgba(204, 43, 43, 0.4);
+
+    --tbc-red: #e04848;
+    --tbc-red-hover: #cc2b2b;
+    --tbc-amber: #f5a000;
+    --tbc-sidebar: #111111;
+
+    --background: 0 0% 4%;
+    --foreground: 0 0% 96%;
+    --card: 0 0% 9%;
+    --card-foreground: 0 0% 96%;
+    --popover: 0 0% 9%;
+    --popover-foreground: 0 0% 96%;
+    --primary: 0 65% 48%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 0 0% 12%;
+    --secondary-foreground: 0 0% 96%;
+    --muted: 0 0% 12%;
+    --muted-foreground: 0 0% 64%;
+    --accent: 0 65% 48%;
+    --accent-foreground: 0 0% 100%;
+    --destructive: 0 72% 51%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 0 0% 100% / 0.1;
+    --input: 0 0% 100% / 0.1;
+    --ring: 0 65% 48%;
+    --toggle-off: #374151;
+  }
+}
+
+@layer base {
+  html {
+    background-color: var(--page-bg);
+  }
+
+  * {
+    @apply border-border;
+  }
+
+  body {
+    background-color: var(--bg-base);
+    color: var(--text-primary);
+    font-family: var(--font-inter), system-ui, sans-serif;
+    @apply antialiased;
+  }
+
+  h1,
+  h2,
+  h3,
+  .font-display {
+    font-family: var(--font-inter), system-ui, sans-serif;
+    font-weight: 600;
+    color: var(--text-primary);
+  }
+}
+
+@layer components {
+  .surface-card {
+    border-radius: 1rem;
+    border: 1px solid var(--border-subtle);
+    background-color: var(--bg-surface);
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+    transition:
+      border-color 0.2s ease,
+      background-color 0.2s ease,
+      box-shadow 0.2s ease;
+  }
+
+  .surface-card:hover {
+    border-color: var(--border-glow);
+  }
+
+  .micro-label {
+    @apply text-[11px] font-medium uppercase tracking-wider text-[#6B7280];
+  }
+
+  .status-pill {
+    @apply inline-flex items-center rounded-full px-2.5 py-0.5 font-mono text-[11px] font-medium uppercase tracking-wider;
+  }
+
+  .status-pill-success {
+    background-color: rgba(21, 128, 61, 0.1);
+    color: #15803d;
+  }
+
+  .dark .status-pill-success {
+    background-color: rgba(34, 197, 94, 0.12);
+    color: #4ade80;
+  }
+
+  .status-pill-danger {
+    background-color: rgba(204, 43, 43, 0.1);
+    color: #cc2b2b;
+  }
+
+  .dark .status-pill-danger {
+    background-color: rgba(224, 72, 72, 0.15);
+    color: #f87171;
+  }
+
+  .status-pill-neutral {
+    background-color: rgba(107, 114, 128, 0.1);
+    color: var(--text-muted);
+  }
+
+  .dark .status-pill-neutral {
+    background-color: rgba(255, 255, 255, 0.06);
+  }
+
+  .status-pill-platform {
+    background-color: rgba(204, 43, 43, 0.1);
+    color: #cc2b2b;
+  }
+
+  .dark .status-pill-platform {
+    background-color: rgba(224, 72, 72, 0.15);
+    color: #f87171;
+  }
+
+  .status-pill-image {
+    background-color: rgba(245, 160, 0, 0.12);
+    color: #b45309;
+  }
+
+  .dark .status-pill-image {
+    background-color: rgba(245, 160, 0, 0.15);
+    color: #f5a000;
+  }
+
+  .status-pill-video {
+    background-color: rgba(204, 43, 43, 0.1);
+    color: #cc2b2b;
+  }
+
+  .dark .status-pill-video {
+    background-color: rgba(224, 72, 72, 0.15);
+    color: #f87171;
+  }
+
+  .status-pill-carousel {
+    background-color: rgba(21, 128, 61, 0.1);
+    color: #15803d;
+  }
+
+  .dark .status-pill-carousel {
+    background-color: rgba(245, 160, 0, 0.12);
+    color: var(--accent-amber);
+  }
+}
