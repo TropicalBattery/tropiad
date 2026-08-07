@@ -10,7 +10,6 @@
 // Requires Supabase storage bucket: post-media (public read recommended)
 
 import Replicate from "replicate";
-import sharp from "sharp";
 
 import {
   estimateFluxCost,
@@ -113,7 +112,18 @@ async function downloadImageBuffer(sourceUrl: string): Promise<Buffer> {
   return Buffer.from(imageBuffer);
 }
 
+function isJpegBuffer(buffer: Buffer): boolean {
+  return buffer.length >= 3 && buffer[0] === 0xff && buffer[1] === 0xd8 && buffer[2] === 0xff;
+}
+
 async function convertImageToJpeg(buffer: Buffer): Promise<Buffer> {
+  // Replicate is asked for output_format jpg — skip native sharp when already JPEG
+  // so Vercel approve/production does not require libvips for the happy path.
+  if (isJpegBuffer(buffer)) {
+    return buffer;
+  }
+
+  const { default: sharp } = await import("sharp");
   return sharp(buffer).jpeg({ quality: 90 }).toBuffer();
 }
 
