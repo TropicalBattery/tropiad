@@ -4,7 +4,11 @@ import { advanceRun } from "@/lib/agents/run-processor";
 import { publishPost } from "@/lib/agents/scheduler";
 import { createAdminClient } from "@/lib/supabase/admin";
 
-/** Hobby ceiling is 60s; raise to 300 on Pro if image production times out. */
+/**
+ * Hobby ceiling is 60s. Image poll max wait is 50s so we return a clean
+ * timeout instead of being killed. On Pro, raise maxDuration to 300 and
+ * IMAGE_POLL_MAX_WAIT_MS accordingly.
+ */
 export const maxDuration = 60;
 export const dynamic = "force-dynamic";
 

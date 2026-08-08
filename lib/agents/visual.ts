@@ -31,6 +31,13 @@ const FLUX_SCHNELL = "black-forest-labs/flux-schnell";
 const FLUX_KONTEXT = "black-forest-labs/flux-kontext-pro";
 const POST_MEDIA_BUCKET = "post-media";
 
+/**
+ * Stay under Hobby maxDuration=60 so we return a clean timeout instead of a
+ * Vercel kill. On Pro, maxDuration can go to 300 and this wait can be raised.
+ */
+const IMAGE_POLL_INTERVAL_MS = 2000;
+const IMAGE_POLL_MAX_WAIT_MS = 50 * 1000;
+
 type GenerateImageParams = {
   prompt: string;
   companyId: string;
@@ -180,6 +187,117 @@ function getReplicateClient(): Replicate {
   });
 }
 
+function delay(ms: number): Promise<void> {
+  return new Promise((resolve) => {
+    setTimeout(resolve, ms);
+  });
+}
+
+type ReplicatePredictionStatus =
+  | "starting"
+  | "processing"
+  | "succeeded"
+  | "failed"
+  | "canceled"
+  | "aborted";
+
+type ReplicatePrediction = {
+  id: string;
+  status: ReplicatePredictionStatus | string;
+  output?: unknown;
+  error?: unknown;
+};
+
+function formatReplicateError(error: unknown): string {
+  if (typeof error === "string" && error.trim() !== "") {
+    return error;
+  }
+  if (error instanceof Error && error.message.trim() !== "") {
+    return error.message;
+  }
+  const described = describeUnknown(error);
+  return described === "null" || described === "undefined"
+    ? "unknown error"
+    : described;
+}
+
+/**
+ * Create a Replicate prediction and poll until it completes. Never returns
+ * a still-processing (null) output — throws a clear timeout/failure instead.
+ */
+async function createAndPollImagePrediction(
+  replicate: Replicate,
+  model: typeof FLUX_SCHNELL | typeof FLUX_KONTEXT,
+  input: Record<string, unknown>
+): Promise<unknown> {
+  let prediction: ReplicatePrediction;
+  try {
+    prediction = (await replicate.predictions.create({
+      model,
+      input,
+    })) as ReplicatePrediction;
+  } catch (err: unknown) {
+    console.error("[replicate] create error:", JSON.stringify(err, null, 2));
+    throw new Error(`Image provider call failed: ${String(err)}`);
+  }
+
+  if (!prediction?.id) {
+    throw new Error("Replicate prediction failed: missing prediction id.");
+  }
+
+  const deadline = Date.now() + IMAGE_POLL_MAX_WAIT_MS;
+  console.log(
+    `[replicate] prediction ${prediction.id} status: ${prediction.status}`
+  );
+
+  while (
+    prediction.status === "starting" ||
+    prediction.status === "processing"
+  ) {
+    if (Date.now() >= deadline) {
+      throw new Error(
+        `Replicate image timed out (still ${prediction.status} after ${IMAGE_POLL_MAX_WAIT_MS / 1000}s)`
+      );
+    }
+
+    await delay(IMAGE_POLL_INTERVAL_MS);
+
+    try {
+      prediction = (await replicate.predictions.get(
+        prediction.id
+      )) as ReplicatePrediction;
+    } catch (err: unknown) {
+      console.error("[replicate] poll error:", JSON.stringify(err, null, 2));
+      throw new Error(`Image provider poll failed: ${String(err)}`);
+    }
+
+    console.log(
+      `[replicate] prediction ${prediction.id} status: ${prediction.status}`
+    );
+  }
+
+  if (prediction.status === "failed" || prediction.status === "canceled" || prediction.status === "aborted") {
+    throw new Error(
+      `Replicate prediction failed: ${formatReplicateError(prediction.error)}`
+    );
+  }
+
+  if (prediction.status !== "succeeded") {
+    throw new Error(
+      `Replicate prediction ended with unexpected status '${prediction.status}'.`
+    );
+  }
+
+  if (prediction.output === null || prediction.output === undefined) {
+    throw new Error(
+      "Replicate prediction succeeded but output was empty."
+    );
+  }
+
+  console.log("[replicate] output:", prediction.output);
+  return prediction.output;
+}
+
 export async function generateImageFromPrompt(
   params: GenerateImageParams
 ): Promise<{ imageUrl: string; mediaProvider: MediaProvider }> {
@@ -193,27 +311,29 @@ export async function generateImageFromPrompt(
       console.log(
         `[generateImage] ${postId} -- using Flux Kontext with product reference`
       );
-      output = await replicate.run(FLUX_KONTEXT, {
-        input: {
-          prompt,
-          input_image: featuredProductUrl,
-          aspect_ratio: "1:1",
-          output_format: "jpg",
-          output_quality: 90,
-        },
+      output = await createAndPollImagePrediction(replicate, FLUX_KONTEXT, {
+        prompt,
+        input_image: featuredProductUrl,
+        aspect_ratio: "1:1",
+        output_format: "jpg",
+        output_quality: 90,
       });
     } else {
-      output = await replicate.run(FLUX_SCHNELL, {
-        input: {
-          prompt,
-          aspect_ratio: "1:1",
-          output_format: "jpg",
-          output_quality: 90,
-        },
+      output = await createAndPollImagePrediction(replicate, FLUX_SCHNELL, {
+        prompt,
+        aspect_ratio: "1:1",
+        output_format: "jpg",
+        output_quality: 90,
       });
     }
-    console.log("[replicate] output:", output);
   } catch (err: unknown) {
+    if (
+      err instanceof Error &&
+      (err.message.startsWith("Image provider") ||
+        err.message.startsWith("Replicate "))
+    ) {
+      throw err;
+    }
     console.error("[replicate] full error:", JSON.stringify(err, null, 2));
     throw new Error(`Image provider call failed: ${String(err)}`);
   }

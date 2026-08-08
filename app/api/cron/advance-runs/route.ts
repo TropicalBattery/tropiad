@@ -9,7 +9,10 @@ import {
 } from "@/lib/email/templates";
 import { createAdminClient } from "@/lib/supabase/admin";
 
-/** Hobby ceiling is 60s; raise to 300 on Pro if advance + ideation times out. */
+/**
+ * Hobby ceiling is 60s. Image poll max wait is 50s so production can return
+ * a clean timeout. On Pro, raise maxDuration to 300 and IMAGE_POLL_MAX_WAIT_MS.
+ */
 export const maxDuration = 60;
 export const dynamic = "force-dynamic";
 
