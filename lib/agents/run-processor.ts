@@ -362,7 +362,9 @@ async function runCaptionGeneration(
   runId: string,
   post: Pick<Post, "id" | "company_id" | "platform" | "concept">
 ): Promise<void> {
-  const captionStepId = await startStep(runId, "caption_generation");
+  const captionStepId = await startStep(runId, "caption_generation", {
+    postId: post.id,
+  });
   try {
     await generateCaption(
       post.company_id,
@@ -382,7 +384,9 @@ async function runVisualProduction(
   post: Post,
   brandConfig: BrandConfig
 ): Promise<void> {
-  const visualStepId = await startStep(runId, "visual_production");
+  const visualStepId = await startStep(runId, "visual_production", {
+    postId: post.id,
+  });
   const contentType = normalizeContentType(post.content_type);
   try {
     await produceVisual({

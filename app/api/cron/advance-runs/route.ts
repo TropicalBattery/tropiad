@@ -1,6 +1,7 @@
 import { apiError, apiSuccess } from "@/lib/api/response";
 import { recoverAwaitingConnectionPosts } from "@/lib/agents/connection-recovery";
 import { advanceRun } from "@/lib/agents/run-processor";
+import { reapOrphanedSteps } from "@/lib/agents/run-steps";
 import { getPostAnalytics } from "@/lib/agents/scheduler";
 import {
   sendExpiryNotification,
@@ -30,6 +31,23 @@ export async function GET(request: Request) {
   }
 
   const admin = createAdminClient();
+
+  let reapedSteps: Awaited<ReturnType<typeof reapOrphanedSteps>> = {
+    reaped: [],
+    postsFailed: [],
+    postsReset: [],
+  };
+  try {
+    reapedSteps = await reapOrphanedSteps();
+    if (reapedSteps.reaped.length > 0) {
+      console.warn(
+        `[cron/advance-runs] Reaped ${reapedSteps.reaped.length} orphaned step(s); reset ${reapedSteps.postsReset.length} post(s); failed ${reapedSteps.postsFailed.length} post(s).`
+      );
+    }
+  } catch (reapError) {
+    console.error("[cron/advance-runs] Failed to reap orphaned steps:", reapError);
+  }
+
   const { data: runs, error } = await admin
     .from("content_runs")
     .select("id")
@@ -224,6 +242,7 @@ export async function GET(request: Request) {
   return apiSuccess({
     processed: results.length,
     results,
+    reapedSteps,
     connectionRecovery: await recoverAwaitingConnectionPosts(),
     stalePostExpiry: {
       expiredPosts: expiredPostCount,
