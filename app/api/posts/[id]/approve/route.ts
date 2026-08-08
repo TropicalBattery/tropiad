@@ -4,6 +4,10 @@ import { advanceRun } from "@/lib/agents/run-processor";
 import { publishPost } from "@/lib/agents/scheduler";
 import { createAdminClient } from "@/lib/supabase/admin";
 
+/** Hobby ceiling is 60s; raise to 300 on Pro if image production times out. */
+export const maxDuration = 60;
+export const dynamic = "force-dynamic";
+
 type RouteContext = {
   params: {
     id: string;
