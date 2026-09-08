@@ -15,6 +15,7 @@ import { createAdminClient } from "@/lib/supabase/admin";
  */
 export const maxDuration = 60;
 export const dynamic = "force-dynamic";
+export const fetchCache = "force-no-store";
 
 function verifyCronAuth(request: Request): boolean {
   const authHeader = request.headers.get("authorization");

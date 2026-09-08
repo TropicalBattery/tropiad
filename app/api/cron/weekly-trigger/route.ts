@@ -9,6 +9,7 @@ import { getSingleCompanyId } from "@/lib/config/single-company";
 /** Hobby ceiling is 60s; raise to 300 on Pro if needed. */
 export const maxDuration = 60;
 export const dynamic = "force-dynamic";
+export const fetchCache = "force-no-store";
 
 function verifyCronAuth(request: Request): boolean {
   const authHeader = request.headers.get("authorization");

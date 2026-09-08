@@ -5,6 +5,7 @@ import { createAdminClient } from "@/lib/supabase/admin";
 /** Hobby ceiling is 60s; raise to 300 on Pro if video polling batches time out. */
 export const maxDuration = 60;
 export const dynamic = "force-dynamic";
+export const fetchCache = "force-no-store";
 
 function verifyCronAuth(request: Request): boolean {
   const authHeader = request.headers.get("authorization");

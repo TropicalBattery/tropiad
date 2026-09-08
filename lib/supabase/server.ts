@@ -40,6 +40,12 @@ export function createAdminClient() {
         autoRefreshToken: false,
         persistSession: false,
       },
+      // Bypass Next.js Data Cache so Accept-Profile: ads is always sent on GETs.
+      // Cached GETs replayed public-schema 404s while PATCHes (uncached) hit ads.
+      global: {
+        fetch: (input, init) =>
+          fetch(input, { ...init, cache: "no-store" }),
+      },
     }
   );
 }
