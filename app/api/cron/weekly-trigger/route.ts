@@ -1,5 +1,6 @@
-// Weekly trigger is scheduled externally (Supabase Cron / pg_cron). Schedules
-// run in UTC — adjust offset based on testing.
+// Not scheduled in vercel.json — weekly runs are created manually via
+// run-now / cycles trigger. Call this route with Bearer CRON_SECRET if
+// auto-creation is needed later.
 
 import { apiError, apiSuccess } from "@/lib/api/response";
 import { createWeeklyRun } from "@/lib/agents/run-processor";

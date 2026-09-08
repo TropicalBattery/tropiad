@@ -375,6 +375,7 @@ async function runCaptionGeneration(
     await completeStep(captionStepId, { postId: post.id });
   } catch (err) {
     await failStep(captionStepId, err);
+    await markPostFailed(post.id, err);
     throw err;
   }
 }
@@ -425,6 +426,7 @@ async function runVisualProduction(
     await completeStep(visualStepId, { postId: post.id });
   } catch (err) {
     await failStep(visualStepId, err);
+    await markPostFailed(post.id, err);
     throw err;
   }
 }
