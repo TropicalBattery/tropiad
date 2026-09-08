@@ -1,5 +1,8 @@
 import { NextResponse } from 'next/server'
 
+/** Hobby ceiling is 60s (legacy Hobby default is ~10s without this). */
+export const maxDuration = 60;
+
 export async function GET() {
   const apiKey = process.env.CREATOMATE_API_KEY
   const templateId = process.env.CREATOMATE_TEMPLATE_ID

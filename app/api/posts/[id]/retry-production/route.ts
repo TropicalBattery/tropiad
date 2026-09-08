@@ -10,6 +10,13 @@ import { getSessionUser } from "@/lib/auth/session";
 import { getSingleCompanyId } from "@/lib/config/single-company";
 import { createAdminClient } from "@/lib/supabase/admin";
 
+/**
+ * Hobby ceiling is 60s (legacy Hobby default is ~10s without this).
+ * Note: Creatomate branding poll can exceed 60s (~300s worst case) — still a
+ * known Hobby gap; Pro or off-request polling needed for long composes.
+ */
+export const maxDuration = 60;
+
 type RouteContext = {
   params: { id: string };
 };

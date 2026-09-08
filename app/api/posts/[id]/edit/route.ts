@@ -3,6 +3,9 @@ import { apiError, apiSuccess } from "@/lib/api/response";
 import { advanceRun } from "@/lib/agents/run-processor";
 import { createAdminClient } from "@/lib/supabase/admin";
 
+/** Hobby ceiling is 60s (legacy Hobby default is ~10s without this). */
+export const maxDuration = 60;
+
 type RouteContext = {
   params: {
     id: string;

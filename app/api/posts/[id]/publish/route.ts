@@ -3,6 +3,9 @@ import { NextResponse } from "next/server";
 import { publishPost } from "@/lib/agents/scheduler";
 import { createAdminClient } from "@/lib/supabase/admin";
 
+/** Hobby ceiling is 60s (legacy Hobby default is ~10s without this). */
+export const maxDuration = 60;
+
 type RouteContext = {
   params: {
     id: string;

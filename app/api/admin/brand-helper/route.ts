@@ -8,6 +8,9 @@ import { getSessionUser } from "@/lib/auth/session";
 import { canAccessOperatorTools } from "@/lib/auth/roles";
 import { apiError, apiSuccess } from "@/lib/api/response";
 
+/** Hobby ceiling is 60s (legacy Hobby default is ~10s without this). */
+export const maxDuration = 60;
+
 const brandHelperRequestSchema = z.object({
   companyId: z.string().uuid().optional(),
   whatYouDo: z.string().min(10, "What you do must be at least 10 characters."),

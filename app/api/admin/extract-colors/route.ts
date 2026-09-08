@@ -157,6 +157,9 @@ function getResponseText(content: Anthropic.Message["content"]): string {
   return textBlock.text;
 }
 
+/** Hobby ceiling is 60s (legacy Hobby default is ~10s without this). */
+export const maxDuration = 60;
+
 export async function POST(request: Request) {
   const sessionUser = await getSessionUser();
 

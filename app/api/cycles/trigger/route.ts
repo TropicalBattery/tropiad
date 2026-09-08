@@ -6,6 +6,9 @@ import {
 import { getSingleCompanyId } from "@/lib/config/single-company";
 import { createAdminClient } from "@/lib/supabase/admin";
 
+/** Hobby ceiling is 60s (legacy Hobby default is ~10s without this). */
+export const maxDuration = 60;
+
 export async function POST(request: Request) {
   try {
     // Drain body if present; single-client mode ignores company_id from callers.
